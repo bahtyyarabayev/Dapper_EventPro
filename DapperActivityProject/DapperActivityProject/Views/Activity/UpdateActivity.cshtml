@@ -1,0 +1,119 @@
+﻿@model DapperActivityProject.Dtos.Activity.GetActivityByIdDto
+
+@{
+    ViewData["Title"] = "Etkinlik Güncelle";
+    Layout = "_ActivityLayout";
+}
+
+
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="d-flex align-items-center mb-4">
+                <a asp-action="ActivityList" class="btn btn-outline-secondary btn-sm rounded-circle me-3">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <h2 class="fw-bold text-dark mb-0">Etkinlik Düzenle</h2>
+            </div>
+
+            <div class="card form-container p-4 p-md-5">
+                <form asp-action="UpdateActivity" method="post">
+
+                    
+                    <input type="hidden" asp-for="EventId" />
+
+                   
+                    <div class="section-title text-uppercase small">Genel Bilgiler</div>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-12">
+                            <label class="form-label">ETKİNLİK ADI</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-font"></i></span>
+                                <input type="text" asp-for="Title" class="form-control" placeholder="Etkinlik Adı">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">ETKİNLİK TÜRÜ</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-tags text-primary"></i></span>
+                                <select asp-for="TypeName" class="form-select border-start-0">
+                                    @foreach (var item in ViewBag.Types)
+                                    {
+                                        <option value="@item" selected="@(item == Model.TypeName)">@item</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">ORGANİZASYON</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-building text-primary"></i></span>
+                                <select asp-for="OrganizationName" class="form-select border-start-0">
+                                    @foreach (var item in ViewBag.Orgs)
+                                    {
+                                        <option value="@item" selected="@(item == Model.OrganizationName)">@item</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="section-title text-uppercase small">Lojistik ve Zamanlama</div>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-4">
+                            <label class="form-label">ŞEHİR</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-location-dot text-danger"></i></span>
+                                <select asp-for="CityName" class="form-select border-start-0">
+                                    @foreach (var item in ViewBag.Cities)
+                                    {
+                                        <option value="@item" selected="@(item == Model.CityName)">@item</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">BAŞLANGIÇ TARİHİ</label>
+                            <input type="date" asp-for="StartDate" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">BİTİŞ TARİHİ</label>
+                            <input type="date" asp-for="EndDate" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")">
+                        </div>
+                    </div>
+
+                  
+                    <div class="section-title text-uppercase small">Kapasite ve Finans</div>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="form-label">KATILIMCI SAYISI</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-users"></i></span>
+                                <input type="number" asp-for="AttendanceCount" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">BÜTÇE (₺)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-turkish-lira-sign"></i></span>
+                                <input type="number" step="0.01" asp-for="Budget" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 border-top pt-4">
+                        <a asp-action="ActivityList" class="btn btn-light btn-cancel text-secondary">Vazgeç</a>
+                        <button type="submit" class="btn btn-primary shadow" style="background-color: #1a237e; border:none;">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

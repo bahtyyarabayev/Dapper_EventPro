@@ -1,0 +1,192 @@
+﻿@model DapperActivityProject.Dtos.Activity.CreateActivityDto
+
+@{
+    ViewData["Title"] = "Yeni Etkinlik Oluştur";
+    Layout = "_ActivityLayout";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<style>
+    .form-container {
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border: none;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 0.9rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #1a237e;
+            box-shadow: 0 0 0 0.25 row rgba(26, 35, 126, 0.1);
+        }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-radius: 8px 0 0 8px;
+        color: #6c757d;
+    }
+
+    .section-title {
+        border-left: 5px solid #1a237e;
+        padding-left: 15px;
+        margin-bottom: 25px;
+        color: #1a237e;
+        font-weight: 700;
+    }
+
+    .btn-save {
+        background-color: #1a237e;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        border: none;
+    }
+
+        .btn-save:hover {
+            background-color: #283593;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .btn-cancel {
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <!-- Başlık Bölümü -->
+            <div class="d-flex align-items-center mb-4">
+                <a asp-action="ActivityList" class="btn btn-outline-secondary btn-sm rounded-circle me-3">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <h2 class="fw-bold text-dark mb-0">Yeni Etkinlik Planla</h2>
+            </div>
+
+            <div class="card form-container p-4 p-md-5">
+                <form asp-action="CreateActivity" method="post">
+
+                    <!-- Genel Bilgiler -->
+                    <div class="section-title text-uppercase small">Genel Bilgiler</div>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-12">
+                            <label class="form-label">ETKİNLİK ADI</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-font"></i></span>
+                                <input type="text" asp-for="Title" class="form-control" placeholder="Etkinliğin tam adını giriniz" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">ETKİNLİK TÜRÜ</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-tags text-primary"></i></span>
+                                <select asp-for="TypeName" class="form-select border-start-0" required>
+                                    <option value="" disabled selected>Tür Seçiniz...</option>
+                                    @if (ViewBag.Types != null)
+                                    {
+                                        foreach (var item in ViewBag.Types)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">ORGANİZASYON / KURUM</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-building text-primary"></i></span>
+                                <select asp-for="OrganizationName" class="form-select border-start-0" required>
+                                    <option value="" disabled selected>Kurum Seçiniz...</option>
+                                    @if (ViewBag.Orgs != null)
+                                    {
+                                        foreach (var item in ViewBag.Orgs)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lojistik ve Zamanlama -->
+                    <div class="section-title text-uppercase small">Lojistik ve Zamanlama</div>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-4">
+                            <label class="form-label">ŞEHİR</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-location-dot text-danger"></i></span>
+                                <select asp-for="CityName" class="form-select border-start-0" required>
+                                    <option value="" disabled selected>Şehir Seçiniz...</option>
+                                    @if (ViewBag.Cities != null)
+                                    {
+                                        foreach (var item in ViewBag.Cities)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">BAŞLANGIÇ TARİHİ</label>
+                            <input type="date" asp-for="StartDate" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">BİTİŞ TARİHİ</label>
+                            <input type="date" asp-for="EndDate" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <!-- Finansal ve Katılım -->
+                    <div class="section-title text-uppercase small">Kapasite ve Finans</div>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="form-label">BEKLENEN KATILIMCI SAYISI</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-users"></i></span>
+                                <input type="number" asp-for="AttendanceCount" class="form-control" placeholder="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">TOPLAM BÜTÇE (₺)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-turkish-lira-sign"></i></span>
+                                <input type="number" step="0.01" asp-for="Budget" class="form-control" placeholder="0,00" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Butonlar -->
+                    <div class="d-flex justify-content-end gap-3 border-top pt-4">
+                        <a asp-action="ActivityList" class="btn btn-light btn-cancel text-secondary">Vazgeç</a>
+                        <button type="submit" class="btn btn-save shadow">
+                            <i class="fa-solid fa-check-circle me-2"></i>Etkinliği Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,144 @@
+﻿@model List<DapperActivityProject.Dtos.Organization.ResultOrganizationDto>
+
+@{
+    ViewData["Title"] = "Organizasyon Yönetimi";
+    Layout = "_ActivityLayout";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<div class="container py-5">
+    <!-- Üst Başlık ve Ekle Butonu -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Organizasyon Paneli</h2>
+            <p class="text-muted small mb-0">Toplam @Model.Count() kayıtlı organizasyon bulunmaktadır.</p>
+        </div>
+        <a asp-action="CreateOrganization" class="btn btn-primary px-4 py-2 shadow-sm rounded-3">
+            <i class="fa-solid fa-plus me-2"></i>Yeni Organizasyon
+        </a>
+    </div>
+
+    <!-- Özet İstatistik Kartları -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 rounded-4 bg-primary text-white">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-building fa-xl"></i>
+                    </div>
+                    <div>
+                        <div class="small opacity-75 text-uppercase fw-bold">Aktif Kurum</div>
+                        <h3 class="mb-0 fw-bold">@Model.Count()</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 rounded-4 bg-white">
+                <div class="d-flex align-items-center">
+                    <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-city fa-xl"></i>
+                    </div>
+                    <div>
+                        <div class="small text-muted text-uppercase fw-bold">Şehir Çeşitliliği</div>
+                        <h3 class="mb-0 fw-bold">@Model.Select(x => x.CityName).Distinct().Count()</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 rounded-4 bg-white">
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3 me-3">
+                        <i class="fa-solid fa-tags fa-xl"></i>
+                    </div>
+                    <div>
+                        <div class="small text-muted text-uppercase fw-bold">Sektör/Tür</div>
+                        <h3 class="mb-0 fw-bold">@Model.Select(x => x.TypeName).Distinct().Count()</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Veri Tablosu -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3 border-0 text-muted small">ORGANİZASYON</th>
+                        <th class="py-3 border-0 text-muted small">TÜR</th>
+                        <th class="py-3 border-0 text-muted small">LOKASYON</th>
+                        <th class="py-3 border-0 text-end pe-4 text-muted small">İŞLEMLER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-light rounded-3 p-2 me-3 text-center" style="width: 40px;">
+                                        <i class="fa-solid fa-house-chimney text-primary"></i>
+                                    </div>
+                                    <span class="fw-bold text-dark">@item.OrganizationName</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">
+                                    @item.TypeName
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center text-muted">
+                                    <i class="fa-solid fa-location-dot me-2 text-danger opacity-75"></i>
+                                    @item.CityName
+                                </div>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group shadow-sm rounded-3 overflow-hidden">
+                                    <a href="/Organization/UpdateOrganization/" class="btn btn-white btn-sm px-3 border-end" title="Düzenle">
+                                        <i class="fa-solid fa-pen-to-square text-secondary"></i>
+                                    </a>
+                                    <a href="/Organization/DeleteOrganization/"
+                                   onclick="return confirm('Bu organizasyonu silmek istediğinize emin misiniz?')"
+                                   class="btn btn-white btn-sm px-3 text-danger" title="Sil">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        transition: transform 0.2s ease;
+    }
+
+    .btn-white {
+        background: white;
+        border: 1px solid #eee;
+    }
+
+        .btn-white:hover {
+            background: #f8f9fa;
+        }
+
+    .table thead th {
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+</style>
+

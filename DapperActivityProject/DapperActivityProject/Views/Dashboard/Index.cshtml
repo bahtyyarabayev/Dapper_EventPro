@@ -1,0 +1,605 @@
+﻿@using DapperActivityProject.Dtos.Dashboard
+@{
+    ViewData["Title"] = "Etkinlik Analiz Merkezi";
+    Layout = "_ActivityLayout";
+
+    var top5Cities = (List<ResultDashboardCountDto>)ViewBag.Top5Cities;
+    var top5Orgs = (List<ResultDashboardCountDto>)ViewBag.Top5Orgs;
+    var top5Years = (List<ResultDashboardYearDto>)ViewBag.Top5Years;
+
+    var top5Budget = (List<ResultDashboardEventDto>)ViewBag.Top5Budget;
+    var top5Attended = (List<ResultDashboardEventDto>)ViewBag.Top5Attended;
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f4f5f7;
+    }
+
+    .db {
+        padding: 1.5rem;
+    }
+
+    .db-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+        .db-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+    .db-header-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .db-tag {
+        font-size: 11px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid #e0e0e0;
+        color: #888;
+        background: #fff;
+    }
+
+    .db-btn {
+        font-size: 12px;
+        padding: 7px 16px;
+        border-radius: 20px;
+        border: 1px solid #e0e0e0;
+        background: #fff;
+        color: #555;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* STAT CARDS */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        background: #fff;
+        border: 1px solid #ebebeb;
+        border-radius: 14px;
+        padding: 1.1rem 1.25rem;
+    }
+
+    .stat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .stat-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .stat-change {
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .stat-num {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a1a2e;
+        line-height: 1;
+    }
+
+    .stat-lbl {
+        font-size: 11px;
+        color: #888;
+        margin-top: 5px;
+    }
+
+    .stat-sub {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* GRID LAYOUTS */
+    .row2 {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+        gap: 14px;
+        margin-bottom: 1.5rem;
+    }
+
+    .row3 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 1.5rem;
+    }
+
+    .card {
+        background: #fff;
+        border: 1px solid #ebebeb;
+        border-radius: 14px;
+        padding: 1.25rem;
+    }
+
+    .card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 3px;
+    }
+
+    .card-sub {
+        font-size: 11px;
+        color: #aaa;
+        margin-bottom: 1rem;
+    }
+
+    .chart-wrap {
+        position: relative;
+        width: 100%;
+    }
+
+    /* DONUT */
+    .donut-area {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .donut-wrap {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .donut-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .donut-big {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a2e;
+    }
+
+    .donut-small {
+        font-size: 10px;
+        color: #aaa;
+    }
+
+    .legend-list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .leg-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .leg-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .leg-name {
+        font-size: 12px;
+        color: #333;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .leg-val {
+        font-size: 12px;
+        font-weight: 500;
+        color: #888;
+    }
+
+    /* TIMELINE */
+    .tl {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tl-item {
+        display: flex;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .tl-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 24px;
+    }
+
+    .tl-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 3px;
+    }
+
+    .tl-line {
+        flex: 1;
+        width: 2px;
+        background: #ebebeb;
+        margin: 3px 0;
+    }
+
+    .tl-item:last-child .tl-line {
+        display: none;
+    }
+
+    .tl-body {
+        flex: 1;
+        padding-bottom: 13px;
+    }
+
+    .tl-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tl-year {
+        font-size: 13px;
+        font-weight: 500;
+        color: #1a1a2e;
+    }
+
+    .tl-cnt {
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .tl-bar-wrap {
+        height: 5px;
+        background: #f0f0f0;
+        border-radius: 3px;
+        margin-top: 5px;
+    }
+
+    .tl-bar {
+        height: 5px;
+        border-radius: 3px;
+    }
+
+    /* BUBBLE LEG */
+    .bubble-leg {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    .bubble-leg-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        color: #888;
+    }
+
+    .bubble-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+    }
+</style>
+
+<div class="db">
+    <div class="db-header">
+        <h1>Aktivite Dashboard</h1>
+        <div class="db-header-right">
+            <span class="db-tag">Tüm Dönemler</span>
+            <button class="db-btn">
+                <i class="fa-solid fa-download"></i> Rapor Al
+            </button>
+        </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon" style="background:#EEEDFE">
+                    <i class="fa-solid fa-users" style="color:#534AB7;font-size:15px"></i>
+                </div>
+                <span class="stat-change" style="background:#E1F5EE;color:#0F6E56">Zirve</span>
+            </div>
+            <div class="stat-num">@top5Attended[0].AttendanceCount.ToString("N0")</div>
+            <div class="stat-lbl">En fazla katılımcı</div>
+            <div class="stat-sub">@top5Attended[0].Title</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon" style="background:#E1F5EE">
+                    <i class="fa-solid fa-coins" style="color:#0F6E56;font-size:15px"></i>
+                </div>
+                <span class="stat-change" style="background:#E1F5EE;color:#0F6E56">1. Sıra</span>
+            </div>
+            <div class="stat-num">@top5Budget[0].Budget.ToString("C0")</div>
+            <div class="stat-lbl">En büyük bütçe</div>
+            <div class="stat-sub">@top5Budget[0].Title</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon" style="background:#FAEEDA">
+                    <i class="fa-solid fa-location-dot" style="color:#854F0B;font-size:15px"></i>
+                </div>
+                <span class="stat-change" style="background:#FAEEDA;color:#854F0B">@top5Cities[0].Count etkinlik</span>
+            </div>
+            <div class="stat-num">@top5Cities[0].Name</div>
+            <div class="stat-lbl">Lider şehir</div>
+            <div class="stat-sub">Türkiye geneli 1. sıra</div>
+        </div>
+    </div>
+
+    <!-- ROW 2: Line + Donut -->
+    <div class="row2">
+        <div class="card">
+            <div class="card-title">Yıllık büyüme trendi</div>
+            <div class="card-sub">Etkinlik sayısı — yıllara göre</div>
+            <div class="chart-wrap" style="height:200px">
+                <canvas id="lineChart" role="img" aria-label="Yıllık etkinlik trendi çizgi grafiği">Yıllık etkinlik sayıları.</canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Organizasyonlara göre pay</div>
+            <div class="card-sub">İlk 5 organizasyon dağılımı</div>
+            <div class="donut-area">
+                <div class="donut-wrap">
+                    <canvas id="donutChart" width="120" height="120" role="img" aria-label="Organizasyon dağılımı halka grafiği">Organizasyon payları.</canvas>
+                    <div class="donut-center">
+                        <div class="donut-big" id="donutTotal"></div>
+                        <div class="donut-small">toplam</div>
+                    </div>
+                </div>
+                <div class="legend-list" id="donutLegend"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROW 3: HBar + Timeline -->
+    <div class="row3">
+        <div class="card">
+            <div class="card-title">Bütçe sıralaması</div>
+            <div class="card-sub">En değerli 5 etkinlik</div>
+            <div class="chart-wrap" style="height:200px">
+                <canvas id="hbarChart" role="img" aria-label="Etkinlik bütçeleri yatay bar grafiği">Etkinlik bütçe sıralaması.</canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Yıllara göre yoğunluk</div>
+            <div class="card-sub">Etkinlik adedi ve trendi</div>
+            <div class="tl" id="tlRoot"></div>
+        </div>
+    </div>
+
+    <!-- ROW FULL: Bubble -->
+    <div class="card">
+        <div class="card-title">Şehir bazlı etkinlik &amp; katılımcı dağılımı</div>
+        <div class="card-sub">Balon boyutu = etkinlik sayısı &nbsp;·&nbsp; Y ekseni = katılımcı yoğunluğu</div>
+        <div class="bubble-leg" id="bubbleLeg"></div>
+        <div class="chart-wrap" style="height:260px">
+            <canvas id="bubbleChart" role="img" aria-label="Şehir bazlı baloncuk grafiği">Şehir bazlı etkinlik ve katılımcı dağılımı.</canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const cityLabels = @Html.Raw(Json.Serialize(((List<ResultDashboardCountDto>)ViewBag.Top5Cities).Select(x => x.Name)));
+    const cityData = @Html.Raw(Json.Serialize(((List<ResultDashboardCountDto>)ViewBag.Top5Cities).Select(x => x.Count)));
+    const cityKatilim = @Html.Raw(Json.Serialize(((List<ResultDashboardCountDto>)ViewBag.Top5Cities).Select(x => x.TotalAttendance)));
+
+    // Yıllar
+    const yearLabels = @Html.Raw(Json.Serialize(top5Years.Select(x => x.Year.ToString())));
+    const yearData = @Html.Raw(Json.Serialize(top5Years.Select(x => x.Count)));
+
+    // Organizasyonlar
+    const orgLabels = @Html.Raw(Json.Serialize(top5Orgs.Select(x => x.Name)));
+    const orgData = @Html.Raw(Json.Serialize(top5Orgs.Select(x => x.Count)));
+
+    const budgetLabels = @Html.Raw(Json.Serialize(top5Budget.Select(x => x.Title)));
+    const budgetData = @Html.Raw(Json.Serialize(top5Budget.Select(x => (double)x.Budget / 1000000)));
+
+    
+    const COLORS = ['#534AB7', '#1D9E75', '#D85A30', '#BA7517', '#378ADD'];
+    const gridC = 'rgba(0,0,0,0.05)';
+    const tickC = '#aaa';
+
+    // ── Line Chart ───────────────────────────────────────────────────────
+    new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+            labels: yearLabels,
+            datasets: [{
+                label: 'Etkinlik',
+                data: yearData,
+                borderColor: '#534AB7',
+                backgroundColor: 'rgba(83,74,183,0.08)',
+                pointBackgroundColor: '#534AB7',
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.parsed.y + ' etkinlik' } } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: gridC }, ticks: { color: tickC, font: { size: 11 } } },
+                x: { grid: { display: false }, ticks: { color: tickC, font: { size: 11 } } }
+            }
+        }
+    });
+
+    // ── Donut Chart ──────────────────────────────────────────────────────
+    const orgTotal = orgData.reduce((s, v) => s + v, 0);
+    document.getElementById('donutTotal').textContent = orgTotal;
+
+    new Chart(document.getElementById('donutChart'), {
+        type: 'doughnut',
+        data: {
+            labels: orgLabels,
+            datasets: [{ data: orgData, backgroundColor: COLORS, borderWidth: 2, borderColor: '#fff', hoverOffset: 4 }]
+        },
+        options: {
+            responsive: false, cutout: '68%',
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.parsed + ' etkinlik' } } }
+        }
+    });
+
+    const dl = document.getElementById('donutLegend');
+    orgLabels.forEach((name, i) => {
+        const pct = Math.round((orgData[i] / orgTotal) * 100);
+        dl.innerHTML += `<div class="leg-item">
+                <div class="leg-dot" style="background:${COLORS[i]}"></div>
+                <div class="leg-name">${name}</div>
+                <div class="leg-val">${pct}%</div>
+            </div>`;
+    });
+
+    // ── Horizontal Bar ───────────────────────────────────────────────────
+    new Chart(document.getElementById('hbarChart'), {
+        type: 'bar',
+        data: {
+            labels: budgetLabels,
+            datasets: [{
+                label: '₺M', data: budgetData,
+                backgroundColor: COLORS,
+                borderRadius: 5, borderSkipped: false, barThickness: 22
+            }]
+        },
+        options: {
+            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ₺' + c.parsed.x.toFixed(1) + 'M' } } },
+            scales: {
+                x: { grid: { color: gridC }, ticks: { color: tickC, font: { size: 11 }, callback: v => '₺' + v + 'M' } },
+                y: { grid: { display: false }, ticks: { color: tickC, font: { size: 11 } } }
+            }
+        }
+    });
+
+    // ── Timeline ─────────────────────────────────────────────────────────
+    const maxY = Math.max(...yearData);
+    const tl = document.getElementById('tlRoot');
+    yearLabels.forEach((yr, i) => {
+        const pct = Math.round((yearData[i] / maxY) * 100);
+        tl.innerHTML += `<div class="tl-item">
+                <div class="tl-left">
+                    <div class="tl-dot" style="background:${COLORS[i]}"></div>
+                    <div class="tl-line"></div>
+                </div>
+                <div class="tl-body">
+                    <div class="tl-top">
+                        <span class="tl-year">${yr}</span>
+                        <span class="tl-cnt" style="color:${COLORS[i]}">${yearData[i]}</span>
+                    </div>
+                    <div class="tl-bar-wrap">
+                        <div class="tl-bar" style="width:${pct}%;background:${COLORS[i]}"></div>
+                    </div>
+                </div>
+            </div>`;
+    });
+
+    // ── Bubble Chart ─────────────────────────────────────────────────────
+    const bl = document.getElementById('bubbleLeg');
+    cityLabels.forEach((name, i) => {
+        bl.innerHTML += `<div class="bubble-leg-item">
+                <div class="bubble-dot" style="background:${COLORS[i]}"></div>
+                ${name} — ${cityData[i]} etkinlik
+            </div>`;
+    });
+
+    new Chart(document.getElementById('bubbleChart'), {
+        type: 'bubble',
+        data: {
+            datasets: cityLabels.map((name, i) => ({
+                label: name,
+                data: [{ x: i + 1, y: cityKatilim[i], r: Math.round(cityData[i] * 0.85 + 5) }],
+                backgroundColor: COLORS[i] + 'cc',
+                borderColor: COLORS[i],
+                borderWidth: 1.5,
+                hoverBackgroundColor: COLORS[i]
+            }))
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            layout: { padding: { top: 20, bottom: 10, left: 10, right: 10 } },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: ctx => ctx[0].dataset.label,
+                        label: ctx => [
+                            ' Etkinlik: ' + cityData[ctx.datasetIndex],
+                            ' Katılımcı: ' + cityKatilim[ctx.datasetIndex].toLocaleString('tr-TR')
+                        ]
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    min: 0, max: cityLabels.length + 1,
+                    grid: { display: false },
+                    ticks: { color: tickC, font: { size: 11 }, stepSize: 1, callback: v => cityLabels[v - 1] ?? '' }
+                },
+                y: {
+                    min: 0,
+                    grid: { color: gridC },
+                    ticks: { color: tickC, font: { size: 11 }, callback: v => v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v },
+                    title: { display: true, text: 'Katılımcı', color: tickC, font: { size: 11 } }
+                }
+            }
+        }
+    });
+</script>
